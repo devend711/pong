@@ -11,15 +11,9 @@ var height = 600;
 canvas.width = width;
 canvas.height = height;
 
-var paused = false;
+var paused = true;
 
 var context = canvas.getContext('2d');
-
-//***** object creation *****
-
-var player = new Player();
-var computer = new Computer();
-var ball = new Ball(200, 300);
 
 //***** event listeners *****
 
@@ -27,6 +21,10 @@ var keysDown = {};
 
 window.addEventListener("keydown", function(event) {
   keysDown[event.keyCode] = true;
+  if(paused) {
+  	ball.resetPosition();
+  	paused = false;
+  }
 });
 
 window.addEventListener("keyup", function(event) {
@@ -41,8 +39,7 @@ window.onload = function() {
 };
 
 var step = function() {
-	if(paused) return;
-  update();
+  if(!paused) update();
   render();
   animate(step);
 };
@@ -93,13 +90,17 @@ Paddle.prototype.render = function() {
 
 //***** ball *****
 
-function Ball(x, y) {
-  this.x = x;
-  this.y = y;
-  this.xSpeed = 0;
+function Ball() {
+  this.resetPosition();
+};
+
+Ball.prototype.resetPosition = function() {
+	this.x = 200;
+	this.y = 300;
+	this.xSpeed = 0;
   this.ySpeed = 3;
   this.radius = 5;
-}
+};
 
 Ball.prototype.render = function() {
   context.beginPath();
@@ -166,7 +167,7 @@ Player.prototype.update = function() {
 
 function Computer() {
   this.paddle = new Paddle(175, 10, 50, 10);
-  this.paddle.xSpeed = 4;
+  this.paddle.xSpeed = 4.1;
 }
 
 Computer.prototype.render = function() {
@@ -180,3 +181,9 @@ Computer.prototype.update = function() {
     this.paddle.move(this.paddle.xSpeed);
 	}
 }
+
+//***** object creation *****
+
+var player = new Player();
+var computer = new Computer();
+var ball = new Ball();
